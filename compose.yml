@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+
+  
+  resource_db:
+    image: mongo:7.0.0-rc3-jammy
+    container_name: resource-service-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${CMS_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${CMS_DB_PASS}
+    volumes:
+      - ./storages/resource_db:/data/
+    ports:
+      - "${CMS_DB_PORT}:27017"  
+    env_file:
+      - path: ./resource-server/.env
+        required: true 
+
+
+  users_db:
+    image: mysql:8.0.33
+
+    container_name: users-service-db
+        
+    volumes:
+      - ./storages/users_db:/var/lib/mysql
+
+    ports:
+      - "${DB_PORT}:3306"
+
+    restart: unless-stopped
+    
+    environment:
+        MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+        MYSQL_DATABASE: ${DB_DATABASE}
