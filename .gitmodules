@@ -1,0 +1,8 @@
+[submodule "resource-server"]
+	path = resource-server
+	url = git@github.com:V-CMS-IR/resource-server.git
+	branch = master
+[submodule "users-service"]
+	path = users-service
+	url = git@github.com:V-CMS-IR/users-service.git
+	branch = master
