@@ -7,7 +7,7 @@ services:
     volumes:
       - ./resource-server:/home/resource-server
       - ./users-service:/users-service
-      - ./docker_resources:/etc/nginx/nginx.conf
+      - ./docker_resources/nginx.conf:/etc/nginx/nginx.conf
 
     ports:
       - "80:80"
