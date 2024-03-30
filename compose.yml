@@ -37,11 +37,7 @@ services:
     volumes:
       - users_db:/data/
     ports:
-      - "${CMS_DB_PORT}:27017"  
-    env_file:
-      - path: ./resource-server/.env
-        required: true 
-
+      - "${CMS_DB_PORT}:27017"
 
   users_db:
     image: mysql:8.0.33
@@ -61,5 +57,5 @@ services:
         MYSQL_DATABASE: ${DB_DATABASE}
   
 volumes:
-  - resource_db:
-  - users_db:
+  resource_db:
+  users_db:
