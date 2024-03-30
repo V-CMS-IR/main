@@ -2,7 +2,31 @@ version: "3.8"
 
 services:
 
-  
+  webserver:
+    image: nginx:alpine3.18-slim
+    volumes:
+      - ./resource-server:/home/resource-server
+      - ./users-service:/users-service
+      - ./docker_resources:/etc/nginx/nginx.conf
+
+    ports:
+      - "80:80"
+
+  resource_service:
+    image: rust:slim-bullseye
+    volumes:
+      - ./resource-server:/home/resource-server
+
+
+  users_service:
+    build: 
+      context: ./docker_resources
+      dockerfile: php_dockerfile
+    image: inner_php:v1
+    volumes:
+      - ./users-service:/var/www/html
+
+
   resource_db:
     image: mongo:7.0.0-rc3-jammy
     container_name: resource-service-db
@@ -11,7 +35,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${CMS_DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${CMS_DB_PASS}
     volumes:
-      - ./storages/resource_db:/data/
+      - users_db:/data/
     ports:
       - "${CMS_DB_PORT}:27017"  
     env_file:
@@ -25,7 +49,7 @@ services:
     container_name: users-service-db
         
     volumes:
-      - ./storages/users_db:/var/lib/mysql
+      - users_db:/var/lib/mysql
 
     ports:
       - "${DB_PORT}:3306"
@@ -35,3 +59,7 @@ services:
     environment:
         MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
         MYSQL_DATABASE: ${DB_DATABASE}
+  
+volumes:
+  - resource_db:
+  - users_db:
