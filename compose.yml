@@ -1,33 +1,68 @@
-version: "3.8"
+version: "3.8.0"
 
 services:
 
   webserver:
-    image: nginx:alpine3.18-slim
+    image: nginx:stable-perl
+    container_name: webserver
     volumes:
       - ./resource-server:/home/resource-server
       - ./users-service:/users-service
-      - ./docker_resources/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker_resources/nginx/templates:/etc/nginx/templates/
+      - ./docker_resources/nginx/nginx.conf:/etc/nginx/nginx.conf
 
+    environment:
+      USERS_SERVICE_PORT: ${USERS_SERVICE_PORT}
     ports:
       - "80:80"
 
-  resource_service:
-    image: rust:slim-bullseye
+    depends_on:
+      - resource-service
+      - users-service
+
+
+  resource-service:
+    build:
+      context: ./docker_resources/rust
+      dockerfile: DockerFile
+
+    image: inner_rust:v1
+    container_name: resource-service
     volumes:
-      - ./resource-server:/home/resource-server
+      - ./resource-server:/home/
+    environment:
+      CMS_DB_USER: ${CMS_DB_USER}
+      CMS_DB_PASS: ${CMS_DB_PASS}
+      CMS_DB_HOST: ${CMS_DB_HOST}
+      CMS_DB_PORT: ${CMS_DB_PORT}
+      APP_HOST: 0.0.0.0
+      APP_PORT: ${APP_PORT-6060}
+      USERS_SERVICE_HOST: ${USERS_SERVICE_HOST}
+      USERS_SERVICE_PORT: ${USERS_SERVICE_PORT}
+
+    ports:
+      - "4050:${APP_PORT-6060}"
+    expose:
+      - ${APP_PORT-6060}
+    command: bash -c "chmod +x /home/resource-server && /home/resource-server"
+
+    depends_on:
+      - resource-service-db
 
 
-  users_service:
-    build: 
-      context: ./docker_resources
-      dockerfile: php_dockerfile
+  users-service:
+    container_name: users-service
+    build:
+      context: ./docker_resources/php
+      dockerfile: Dockerfile
     image: inner_php:v1
     volumes:
       - ./users-service:/var/www/html
 
+    depends_on:
+      - users-service-db
 
-  resource_db:
+  resource-service-db:
     image: mongo:7.0.0-rc3-jammy
     container_name: resource-service-db
     restart: unless-stopped
@@ -39,11 +74,11 @@ services:
     ports:
       - "${CMS_DB_PORT}:27017"
 
-  users_db:
+  users-service-db:
     image: mysql:8.0.33
 
     container_name: users-service-db
-        
+
     volumes:
       - users_db:/var/lib/mysql
 
@@ -51,11 +86,11 @@ services:
       - "${DB_PORT}:3306"
 
     restart: unless-stopped
-    
+
     environment:
-        MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-        MYSQL_DATABASE: ${DB_DATABASE}
-  
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+
 volumes:
   resource_db:
   users_db:

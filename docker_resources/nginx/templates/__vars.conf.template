@@ -1,0 +1,4 @@
+
+map $host $users_service_port {
+    default ${USERS_SERVICE_PORT};
+}
