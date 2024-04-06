@@ -1,0 +1,9 @@
+FROM rust:latest
+
+RUN cargo install cargo-watch 
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]

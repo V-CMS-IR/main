@@ -1,0 +1,10 @@
+FROM rust:latest
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+# Here must download source code from git and compile it then run and expose it for productuin
+
+
+ENTRYPOINT [ "/entrypoint.sh" ]

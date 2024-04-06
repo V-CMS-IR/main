@@ -13,7 +13,6 @@ services:
 
     environment:
       USERS_SERVICE_PORT: ${USERS_SERVICE_PORT}
-      RESOURCE_SERVICE_PORT: ${APP_PORT}
     ports:
       - "80:80"
 
@@ -25,13 +24,12 @@ services:
   resource-service:
     build:
       context: ./docker_resources/rust
-      dockerfile: DockerFile
+      dockerfile: DockerFileProduction
 
     image: inner_rust:v1
     container_name: resource-service
     volumes:
-      - ./resource-service:/home/resource-service/
-      - ../rm_orm:/rm_orm
+      - ./resource-service:/home/
     environment:
       CMS_DB_USER: ${CMS_DB_USER}
       CMS_DB_PASS: ${CMS_DB_PASS}
@@ -46,7 +44,7 @@ services:
       - "4050:${APP_PORT-6060}"
     expose:
       - ${APP_PORT-6060}
-    command: bash -c "cd /home/resource-service && cargo watch -c -w src -x run "
+    command: bash -c "chmod +x /home/resource-service && /home/resource-service"
 
     depends_on:
       - resource-service-db
@@ -75,6 +73,9 @@ services:
       - resource-service-db:/data/
     ports:
       - "${CMS_DB_PORT}:27017"
+    depends_on:
+      - users-service-db
+
 
   users-service-db:
     image: mysql:8.0.33
