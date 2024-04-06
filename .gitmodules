@@ -6,3 +6,6 @@
 	path = users-service
 	url = git@github.com:V-CMS-IR/users-service.git
 	branch = master
+[submodule "resource-service"]
+	path = resource-service
+	url = git@github.com:V-CMS-IR/resource-service.git
