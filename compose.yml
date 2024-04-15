@@ -69,14 +69,8 @@ services:
     secrets:
       - source: cms_public_key
         target: cms_public_key
-        gid: '33'
-        uid: '33'
-        mode: 777
       - source: cms_private_key
         target: cms_private_key
-        gid: '33'
-        uid: '33'
-        mode: 777
     depends_on:
       - users-service-db
 
