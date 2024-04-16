@@ -66,6 +66,8 @@ services:
       - ./users-service:/var/www/html
       - ./docker_resources/php/docker.conf:/usr/local/etc/php-fpm.d/zzz-docker.conf
     user: root
+    ports:
+      - "8743:9000"
     secrets:
       - source: cms_public_key
         target: cms_public_key
