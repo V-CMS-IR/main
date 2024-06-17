@@ -5,3 +5,4 @@
 [submodule "resource-service"]
 	path = resource-service
 	url = git@github.com:V-CMS-IR/resource-service.git
+	branch = master
